@@ -1,0 +1,41 @@
+version: '2'
+services:
+
+  myapp:
+    tty: true
+    image: 'fasten_myapp'
+    depends_on:
+      - mariadb
+      - redis
+    ports:
+      - 3002:3000
+    volumes:
+      - ./tmp_web:/app/tmp
+      - ./workflows:/workflows
+    env_file:
+      - .env
+
+  sidekiq:
+    tty: true
+    image: 'fasten_sidekiq'
+    command: bundle exec sidekiq
+    labels:
+      kompose.service.type: nodeport
+    depends_on:
+      - mariadb
+      - redis
+    volumes:
+      - ./tmp_sidekiq:/app/tmp
+      - ./workflows:/workflows
+    env_file:
+      - .env
+    environment:
+      - SKIP_DB_SETUP=yes
+
+  mariadb:
+    image: 'bitnami/mariadb:latest'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+
+  redis:
+    image: redis:latest
