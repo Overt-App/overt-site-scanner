@@ -12,6 +12,7 @@ services:
     volumes:
       - ./tmp_web:/app/tmp
       - ./workflows:/workflows
+      - ./schema.rb:/app/db/schema.rb
     env_file:
       - .env
 
